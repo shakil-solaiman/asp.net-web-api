@@ -1,41 +1,50 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+// Add services to the Dependency Injection (DI) container
+builder.Services.AddOpenApi(); 
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi(); // Enables your API documentation in development mode
 }
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+// START WRITING YOUR ENDPOINTS HERE
 
-app.MapGet("/weatherforecast", () =>
+// app.MapGet("/hello", () => "API is running successfully!");
+
+
+app.MapGet("/", () =>
 {
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    return "Default endpoint is running successfully!";
+});
+
+
+app.MapGet("/hello", () =>
+{
+    return "API is running successfully from hello!";
+});
+
+
+app.MapPost("/hello", () =>
+{
+    return "POST API is running successfully!";
+});
+
+
+app.MapPut("/hello", () =>
+{
+    return "PUT API is running successfully!";
+});
+
+app.MapDelete("/hello", () =>
+{
+    return "DELETE API is running successfully!";
+});
+
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
