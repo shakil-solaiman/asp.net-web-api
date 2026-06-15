@@ -29,10 +29,30 @@ app.MapGet("/", () =>
 });
 
 
-app.MapGet("/hello", () =>
+// Return type 01: Plain Text Response
+app.MapGet("/plain-text", () =>
 {
     return "API is running successfully from hello!";
 });
+
+
+// Return type 02: JSON Object Response
+app.MapGet("/json-object", () =>
+{
+    var response = new {Message = "This is a Json Object response"};
+
+    //return response;
+    return Results.Ok(response); // This will return a 200 OK status code along with the JSON response
+});
+
+
+
+// Reutrn type 03: HTML Response
+app.MapGet("/html", () =>
+{
+    return Results.Content("<h1>This is an HTML response</h1>", "text/html");
+});
+
 
 
 app.MapPost("/hello", () =>
