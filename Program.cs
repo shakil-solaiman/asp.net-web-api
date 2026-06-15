@@ -1,3 +1,6 @@
+using System.Runtime.InteropServices;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the Dependency Injection (DI) container
@@ -53,6 +56,26 @@ app.MapGet("/html", () =>
     return Results.Content("<h1>This is an HTML response</h1>", "text/html");
 });
 
+// Return type 03: 
+
+var products = new List<Product>
+{
+    //new Product {Name = "Iphone", Price = 250},
+
+    new Product ("Samsung", 200),
+    new Product ("Iphone", 250),
+    new Product ("Xiaomi", 150),
+    
+};
+
+app.MapGet("/product-items", () =>
+{
+    return Results.Ok(products);
+});
+
+
+
+
 
 
 app.MapPost("/hello", () =>
@@ -73,3 +96,10 @@ app.MapDelete("/hello", () =>
 
 
 app.Run();
+
+
+
+// Create a DTO
+
+public record Product(string Name, decimal Price);
+

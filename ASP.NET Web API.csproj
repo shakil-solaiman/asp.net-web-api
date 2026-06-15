@@ -7,15 +7,17 @@
     <RootNamespace>ASP.NET_Web_API</RootNamespace>
   </PropertyGroup>
 
+
+
   <!-- Group for NuGet package references -->
-  <ItemGroup>
-      
+  <ItemGroup>    
       <!-- OpenAPI package for ASP.NET Core -->
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
       
       <!-- Swagger package for API documentation and testing -->
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-      
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />     
   </ItemGroup>
+
+
 
 </Project>
