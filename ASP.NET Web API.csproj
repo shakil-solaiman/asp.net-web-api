@@ -15,7 +15,10 @@
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
       
       <!-- Swagger package for API documentation and testing -->
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />     
+      <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />    
+
+      <Compile Remove="ApiResponseTypesDemo.cs" /> 
+      <Compile Remove="template.cs" /> 
   </ItemGroup>
 
 
