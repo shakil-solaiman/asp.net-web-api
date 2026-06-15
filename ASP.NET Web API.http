@@ -5,20 +5,41 @@ Accept: application/json
 
 ###
 
+GET http://localhost:5200/api/categories?searchValue="apple"
+
+###
+
 POST  http://localhost:5200/api/categories
 Content-Type: application/json
 
+# {
+#     "name" : "Car",
+#     "description" : "Hyundai, Toyota, Honda, etc."
+# }
+
 {
-    "name" : "Electronics",
-    "description" : "Devices and Gadgets"
+    "name": "Clothing",
+    "description": "Men's, Women's, and Kids' apparel, activewear, and shoes."
 }
 
+# {
+#     "name": "Home & Kitchen",
+#     "description": "Furniture, kitchen appliances, cookware, and home decor."
+# }
+
+
 
 
 ###
 
-PUT http://localhost:5200/api/categories\
+PUT http://localhost:5200/api/categories/bdfbd89e-5f6a-4f14-9a56-273800e0c81a
+Content-Type: application/json
+
+{
+    "name" : "Clothing and Beauty Products",
+    "description" : "Bangladeshi and International Clothing and Beauty Products."
+}
 
 ###
 
-DELETE http://localhost:5200/api/categories
+DELETE http://localhost:5200/api/categories/671d6fe4-3a07-4145-958e-f86403d3ee7d
