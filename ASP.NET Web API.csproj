@@ -19,6 +19,7 @@
 
       <Compile Remove="ApiResponseTypesDemo.cs" /> 
       <Compile Remove="template.cs" /> 
+      <Compile Remove="SimpleCrudOperation.cs" /> 
   </ItemGroup>
 
 
