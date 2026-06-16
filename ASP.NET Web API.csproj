@@ -20,6 +20,7 @@
       <Compile Remove="ApiResponseTypesDemo.cs" /> 
       <Compile Remove="template.cs" /> 
       <Compile Remove="SimpleCrudOperation.cs" /> 
+      <Compile Remove="PassDataViaRouteAndQuery.cs" />
   </ItemGroup>
 
 

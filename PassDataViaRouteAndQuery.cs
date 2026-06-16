@@ -66,12 +66,12 @@ app.MapPost("/api/categories", ([FromBody] Category categoryData) =>
 
 
 
-
+// {categoryID:guid} -- Route Constraints to validate routes
 
 
 // Receive Category ID from Request Body and Delete a Category by that ID
 
-app.MapDelete("/api/categories/{categoryID}", (Guid categoryID) =>
+app.MapDelete("/api/categories/{categoryID:guid}", (Guid categoryID) =>
 {
     var foundCategory = categories.FirstOrDefault(categoryNum => categoryNum.CategoryId == categoryID);
 
@@ -94,7 +94,7 @@ app.MapDelete("/api/categories/{categoryID}", (Guid categoryID) =>
 // Receive Category ID from Request Body and Update a Category Details by that ID
 
 
-app.MapPut("/api/categories/{categoryID}", (Guid categoryID, [FromBody] Category categoryData) =>
+app.MapPut("/api/categories/{categoryID:guid}", (Guid categoryID, [FromBody] Category categoryData) =>
 {
     var foundCategory = categories.FirstOrDefault(categoryNum => categoryNum.CategoryId == categoryID);
 
