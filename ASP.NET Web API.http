@@ -43,3 +43,13 @@ Content-Type: application/json
 ###
 
 DELETE http://localhost:5200/api/categories/671d6fe4-3a07-4145-958e-f86403d3ee7d
+
+
+POST https://localhost:xxxx/products
+Content-Type: application/json
+
+{
+  "name": "A",
+  "price": 50000,
+  "email": "not-an-email"
+}
