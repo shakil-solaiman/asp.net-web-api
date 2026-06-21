@@ -1,88 +1,189 @@
-using System.ComponentModel.DataAnnotations;
+using System;
+using Microsoft.AspNetCore.Mvc;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi(); 
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen(); 
+
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(); 
+    app.UseSwaggerUI(); 
 }
 
-app.MapPost("/api/products", (Product product) =>
+app.UseHttpsRedirection();
+
+var categories = new List<Category>();
+
+
+
+// Read Categories
+
+app.MapGet("/api/categories", ([FromQuery] string searchValue = "") =>
 {
-    if (!ModelValidator.TryValidate(product, out var errors))
+    Console.WriteLine(searchValue);
+
+    if(!String.IsNullOrEmpty(searchValue))
     {
-        return Results.BadRequest(new ApiResponse<object>
-        {
-            Success = false,
-            Message = "Validation failed.",
-            Errors = errors
-        });
+        var searchCategories = categories.Where(c => c.Name.Contains(searchValue, StringComparison.OrdinalIgnoreCase)).ToList();
+        return Results.Ok(searchCategories);
     }
 
-    return Results.Ok(new ApiResponse<Product>
+    return Results.Ok(categories); 
+});
+
+
+
+
+
+// Pass data by Request Body and Create a Category 
+// Set Validation - Category name can not be null
+
+
+app.MapPost("/api/categories", ([FromBody] Category categoryData) =>
+{
+
+    // Category name can not be null
+
+    if(string.IsNullOrEmpty(categoryData.Name))
     {
-        Success = true,
-        Message = "Product created successfully.",
-        Data = product
-    });
-})
-.WithName("CreateProduct")
-.Produces<ApiResponse<Product>>(StatusCodes.Status200OK)
-.Produces<ApiResponse<object>>(StatusCodes.Status400BadRequest);
+        return Results.BadRequest("Category name is required, it can not be empty!");
+    }
+
+    if(categoryData.Name.Length < 3)
+    {
+        return Results.BadRequest("Category name must be 3 character atleast");
+    }
+
+
+
+    var newCategory = new Category
+    {
+       CategoryId = Guid.NewGuid(),
+       Name = categoryData.Name,
+       Description = categoryData.Description,
+       CreatedAt =DateTime.UtcNow,
+    };
+
+    categories.Add(newCategory);
+    return Results.Created($"/api/categories/{newCategory.CategoryId}",newCategory);
+
+    // Console.WriteLine(categoryData);
+    // return Results.Ok();
+
+});
+
+
+
+// {categoryID:guid} -- Route Constraints to validate routes
+
+
+// Receive Category ID from Request Body and Delete a Category by that ID
+
+app.MapDelete("/api/categories/{categoryID:guid}", (Guid categoryID) =>
+{
+    var foundCategory = categories.FirstOrDefault(categoryNum => categoryNum.CategoryId == categoryID);
+
+    if(foundCategory == null)
+    {
+        return Results.NotFound("Category with this ID is not exist.");
+    }
+
+
+    categories.Remove(foundCategory);
+    return Results.NoContent();
+});
+
+
+
+
+
+
+
+// Receive Category ID from Request Body and Update a Category Details by that ID
+
+
+app.MapPut("/api/categories/{categoryID:guid}", (Guid categoryID, [FromBody] Category categoryData) =>
+{
+    var foundCategory = categories.FirstOrDefault(categoryNum => categoryNum.CategoryId == categoryID);
+
+    // check if category ID exist or not
+    if(foundCategory == null)
+    {
+        return Results.NotFound("Category with this ID is not exist.");
+    }
+
+
+    // check category data exist or not
+
+    if(categoryData == null)
+    {
+        return Results.NotFound("Category data is missing for new update.");
+    }
+
+
+    if(!string.IsNullOrEmpty(categoryData.Name))
+    {
+        if(categoryData.Name.Length > 2)
+        {
+            foundCategory.Name = categoryData.Name;
+        }
+
+        else
+        {
+            return Results.BadRequest("Category name must be 3 character atleast");
+        }
+    }
+
+    if(!string.IsNullOrEmpty(categoryData.Description))
+    {
+        foundCategory.Description = categoryData.Description;
+    }
+
+
+
+    //foundCategory.Name = categoryData.Name ?? foundCategory.Name;  // if it does not send new value
+    //foundCategory.Description = categoryData.Description ?? foundCategory.Description;  // if it does not send new value
+
+    return Results.NoContent();
+});
+
+
+
+
+
+
+
 
 app.Run();
 
-/// <summary>
-/// Represents a product submitted to the API.
-/// </summary>
-public class Product
+
+// Create a Property
+
+public record Category
 {
-    [Required(ErrorMessage = "Name is required.")]
-    [StringLength(50, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 50 characters.")]
-    public string Name { get; set; } = string.Empty;
+    public Guid CategoryId { get; set; }
+    public string? Name { get; set; }
+    public string Description { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
 
-    [Range(1, 10000, ErrorMessage = "Price must be between 1 and 10000.")]
-    public decimal Price { get; set; }
-
-    [Required(ErrorMessage = "Email is required.")]
-    [EmailAddress(ErrorMessage = "Invalid email format.")]
-    public string Email { get; set; } = string.Empty;
 }
 
-/// <summary>
-/// Standard API response wrapper for consistent client-side handling.
-/// </summary>
-public class ApiResponse<T>
-{
-    public bool Success { get; set; }
-    public string Message { get; set; } = string.Empty;
-    public T? Data { get; set; }
-    public IEnumerable<string>? Errors { get; set; }
-}
 
-/// <summary>
-/// Provides reusable model validation logic using Data Annotations.
-/// </summary>
-public static class ModelValidator
-{
-    public static bool TryValidate<T>(T model, out List<string> errors)
-    {
-        var validationResults = new List<ValidationResult>();
-        var context = new ValidationContext(model!);
 
-        bool isValid = Validator.TryValidateObject(
-            model!, context, validationResults, validateAllProperties: true);
+// CRUD Operations
+// Create => Create a category => POST : /api/categories
+// Read => Read a category => GET : /api/categories
+// Update => Update a category => PUT : /api/categories
+// Delete => Delete a category => DELETE : /api/categories
 
-        errors = validationResults
-            .Select(v => v.ErrorMessage ?? "Invalid value.")
-            .ToList();
 
-        return isValid;
-    }
-}
+
+
